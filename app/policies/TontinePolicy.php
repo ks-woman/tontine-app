@@ -7,15 +7,22 @@ use App\Models\Tontine;
 
 class TontinePolicy
 {
-    public function update(User $user, Tontine $tontine)
+    // Vérifier si l'utilisateur peut gérer cette tontine
+    public function gerer(User $user, Tontine $tontine)
     {
         $membre = $user->membre;
         if (!$membre) return false;
+
+        // L'admin peut tout faire
+        if ($user->is_admin) return true;
+
+        // L'organisateur ou co-organisateur peut gérer
         return $tontine->estGerablePar($membre);
     }
 
-    public function manageToursAndCotisations(User $user, Tontine $tontine)
+    // Aliases pour compatibilité
+    public function update(User $user, Tontine $tontine)
     {
-        return $this->update($user, $tontine);
+        return $this->gerer($user, $tontine);
     }
 }

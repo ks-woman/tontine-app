@@ -87,6 +87,11 @@
                                                 class="btn btn-sm btn-info">Voir détails</a>
                                             <a href="{{ route('membre.cotiser.create', $tontine) }}"
                                                 class="btn btn-sm btn-success">Cotiser</a>
+
+                                            <a href="{{ route('membre.paiement.form', $tontine) }}"
+                                                class="btn btn-sm btn-success">
+                                                <i class="fas fa-credit-card"></i> Payer en ligne
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

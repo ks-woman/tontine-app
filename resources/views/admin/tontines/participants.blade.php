@@ -16,7 +16,7 @@
                 <div class="card">
                     <div class="card-header">Ajouter un participant</div>
                     <div class="card-body">
-                        <form action="{{ route('admin.tontines.participants.store', $tontine) }}" method="POST">
+                        <form action="{{ route('tontines.participants.store', $tontine) }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label>Membre</label>
@@ -71,7 +71,7 @@
                                             </br>
                                         <td>
                                             <form
-                                                action="{{ route('admin.tontines.participants.destroy', [$tontine, $participant]) }}"
+                                                action="{{ route('tontines.participants.destroy', [$tontine, $participant]) }}"
                                                 method="POST" style="display:inline-block">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-danger"

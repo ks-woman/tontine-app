@@ -12,17 +12,16 @@ class MesTontinesController extends Controller
         $user = Auth::user();
         $membre = $user->membre;
 
+        // Tontines où il est organisateur
         $tontinesOrganisees = $membre->tontinesOrganisees()->with('tours')->get();
+
+        // Tontines où il est co-organisateur (via la table pivot)
         $tontinesCoOrganisees = $membre->tontinesCoOrganisees()->with('organisateur')->get();
 
-        $tontinesParticipants = $membre->tours()
-            ->with('tontine.organisateur')
-            ->get()
-            ->map(function ($tour) {
-                return $tour->tontine;
-            })
-            ->filter()
-            ->unique('id');
+        // Tontines où il participe (via tontine_participants)
+        $tontinesParticipants = $membre->tontinesParticipant()
+            ->with('organisateur')
+            ->get();
 
         return view('membre.mes_tontines', compact('tontinesOrganisees', 'tontinesCoOrganisees', 'tontinesParticipants'));
     }

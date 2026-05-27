@@ -13,6 +13,7 @@ class TontineParticipantController extends Controller
     {
         $participants = $tontine->membresParticipants ?? collect();
         $membresDisponibles = Membre::whereNotIn('id', $participants->pluck('id'))->get();
+
         return view('admin.tontines.participants', compact('tontine', 'participants', 'membresDisponibles'));
     }
 
@@ -23,9 +24,15 @@ class TontineParticipantController extends Controller
             'role' => 'required|in:organisateur,coorganisateur,participant',
         ]);
 
+        // Vérifier la limite de participants
+        $nbParticipantsActuels = $tontine->membresParticipants()->count();
+        if ($nbParticipantsActuels >= $tontine->nbr_personne) {
+            return back()->with('error', 'La tontine a déjà atteint son nombre maximum de participants (' . $tontine->nbr_personne . ').');
+        }
+
         $tontine->membresParticipants()->attach($request->membre_id, ['role' => $request->role]);
 
-        return back()->with('success', 'Membre ajouté.');
+        return back()->with('success', 'Membre ajouté avec succès.');
     }
 
     public function destroy(Tontine $tontine, Membre $membre)
