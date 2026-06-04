@@ -24,9 +24,13 @@
                 <a href="{{ route('tontines.index') }}" class="btn btn-secondary">Retour</a>
 
                 @can('gerer', $tontine)
-                    <a href="{{ route('tontines.participants.index', $tontine) }}" class="btn btn-secondary">
-                        <i class="fas fa-users"></i> Gérer les participants
-                    </a>
+                    <form action="{{ route('tontines.regenerer-tours', $tontine) }}" method="POST"
+                        style="display:inline-block">
+                        @csrf
+                        <button class="btn btn-sm btn-info" onclick="return confirm('Régénérer l’ordre des tours ?')">
+                            <i class="fas fa-random"></i> Régénérer tours
+                        </button>
+                    </form>
                 @endcan
             </div>
         </div>

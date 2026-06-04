@@ -99,7 +99,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Dernières cotisations</h5>
-                        <a href="{{ route('export.cotisations') }}" class="btn btn-sm btn-primary">
+                        <a href="{{ route('admin.export.cotisations') }}" class="btn btn-sm btn-primary">
                             <i class="fas fa-download"></i> Exporter tout
                         </a>
                     </div>

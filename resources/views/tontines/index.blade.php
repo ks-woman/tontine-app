@@ -36,7 +36,7 @@
                                     <a href="{{ route('tontines.show', $tontine) }}" class="btn btn-sm btn-info">Voir</a>
                                     <a href="{{ route('tontines.edit', $tontine) }}"
                                         class="btn btn-sm btn-warning">Modifier</a>
-                                    <a href="{{ route('admin.tontines.participants.index', $tontine) }}"
+                                    <a href="{{ route('tontines.participants.index', $tontine) }}"
                                         class="btn btn-sm btn-secondary">
                                         <i class="fas fa-users"></i> Participants
                                     </a>

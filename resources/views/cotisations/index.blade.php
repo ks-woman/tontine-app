@@ -72,12 +72,12 @@
                                         </button>
                                     </form>
                                     @if ($cotisation->statut_paiement == 'en_attente')
-                                        <form action="{{ route('cotisations.confirmer', $cotisation) }}" method="POST"
-                                            style="display:inline-block">
+                                        <form action="{{ route('admin.cotisations.confirmer', $cotisation) }}"
+                                            method="POST" style="display:inline-block">
                                             @csrf
                                             <button class="btn btn-sm btn-success">Confirmer</button>
                                         </form>
-                                        <form action="{{ route('cotisations.rejeter', $cotisation) }}" method="POST"
+                                        <form action="{{ route('admin.cotisations.rejeter', $cotisation) }}" method="POST"
                                             style="display:inline-block">
                                             @csrf
                                             <button class="btn btn-sm btn-danger">Rejeter</button>

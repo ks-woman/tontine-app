@@ -54,6 +54,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tontines/{tontine}/participants', [TontineParticipantController::class, 'index'])->name('tontines.participants.index');
     Route::post('/tontines/{tontine}/participants', [TontineParticipantController::class, 'store'])->name('tontines.participants.store');
     Route::delete('/tontines/{tontine}/participants/{membre}', [TontineParticipantController::class, 'destroy'])->name('tontines.participants.destroy');
+    Route::post('/tontines/{tontine}/regenerer-tours', [TontineController::class, 'regenererTours'])->name('tontines.regenerer-tours');
+
+    // ==================== GESTION DES URGENCES (ADMIN) ====================
+    // Liste des demandes d'urgence en attente
+    Route::get('/urgences', [App\Http\Controllers\Admin\UrgenceAdminController::class, 'index'])->name('admin.urgences.index');
+
+    // Valider une demande d'urgence (déclenche le tour immédiat)
+    Route::post('/urgences/{urgence}/valider', [App\Http\Controllers\Admin\UrgenceAdminController::class, 'valider'])->name('admin.urgences.valider');
+
+    // Rejeter une demande d'urgence
+    Route::post('/urgences/{urgence}/rejeter', [App\Http\Controllers\Admin\UrgenceAdminController::class, 'rejeter'])->name('admin.urgences.rejeter');
 
     // ==================== MEMBRE SIMPLE ROUTES ====================
     Route::get('/membre/dashboard', [MembreDashboard::class, 'index'])->name('membre.dashboard');
@@ -63,6 +74,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/membre/mes-cotisations', [MesCotisationsController::class, 'index'])->name('membre.mes_cotisations');
     Route::get('/membre/cotiser/{tontine}', [MembreCotisationController::class, 'create'])->name('membre.cotiser.create');
     Route::post('/membre/cotiser', [MembreCotisationController::class, 'store'])->name('membre.cotiser.store');
+    Route::post('/membre/urgence/{tontine}', [App\Http\Controllers\Membre\UrgenceController::class, 'demander'])->name('membre.urgence.demander');
 
     // Paiement en ligne
     Route::get('/membre/paiement/{tontine}', [PaiementController::class, 'form'])->name('membre.paiement.form');

@@ -82,17 +82,47 @@
                                             {{ $tontine->organisateur->nom ?? '' }}</p>
                                     </div>
                                     <div class="card-footer">
-                                        <div class="d-flex gap-2">
+                                        <div class="d-flex gap-2 flex-wrap">
                                             <a href="{{ route('tontines.show', $tontine) }}"
                                                 class="btn btn-sm btn-info">Voir détails</a>
                                             <a href="{{ route('membre.cotiser.create', $tontine) }}"
                                                 class="btn btn-sm btn-success">Cotiser</a>
-
                                             <a href="{{ route('membre.paiement.form', $tontine) }}"
-                                                class="btn btn-sm btn-success">
+                                                class="btn btn-sm btn-primary">
                                                 <i class="fas fa-credit-card"></i> Payer en ligne
                                             </a>
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                data-bs-target="#urgenceModal{{ $tontine->id }}">
+                                                Besoin urgent
+                                            </button>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal de justification pour l'urgence -->
+                            <div class="modal fade" id="urgenceModal{{ $tontine->id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form action="{{ route('membre.urgence.demander', $tontine) }}" method="POST">
+                                            @csrf
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Demande d’urgence</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label>Justification de l’urgence</label>
+                                                    <textarea name="motif" class="form-control" rows="4"
+                                                        placeholder="Décrivez pourquoi vous avez besoin de l’argent immédiatement..." required></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Annuler</button>
+                                                <button type="submit" class="btn btn-danger">Envoyer la demande</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

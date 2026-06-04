@@ -113,6 +113,11 @@
                         <i class="fas fa-file-signature"></i> Candidatures
                     </a>
 
+                    <a href="{{ route('admin.urgences.index') }}"
+                        class="{{ request()->routeIs('admin.urgences.*') ? 'active' : '' }}">
+                        <i class="fas fa-exclamation-triangle"></i> Urgences
+                    </a>
+
                 </nav>
 
                 <!-- Content wrapper -->
