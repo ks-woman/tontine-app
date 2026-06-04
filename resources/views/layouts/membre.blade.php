@@ -49,6 +49,11 @@
 </head>
 
 <body>
+    @php
+        $notifications = Auth::user()->notifications()->where('lue', false)->latest()->take(5)->get();
+        $totalNonLues = Auth::user()->notifications()->where('lue', false)->count();
+    @endphp
+
     <div class="container-fluid p-0">
         <div class="row g-0">
             <!-- Sidebar membre -->
@@ -87,6 +92,38 @@
                     <div class="d-flex justify-content-between align-items-center w-100">
                         <h5 class="mt-2">Tableau de bord membre</h5>
                         <div class="d-flex align-items-center gap-3">
+                            <!-- 🔔 NOTIFICATIONS -->
+                            <div class="dropdown">
+                                <button class="btn btn-light position-relative" data-bs-toggle="dropdown">
+                                    <i class="fas fa-bell"></i>
+                                    @if ($totalNonLues > 0)
+                                        <span
+                                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            {{ $totalNonLues }}
+                                        </span>
+                                    @endif
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end" style="width: 320px;">
+                                    @forelse($notifications as $notif)
+                                        <a class="dropdown-item" href="{{ $notif->lien ?? '#' }}">
+                                            <strong>{{ $notif->titre }}</strong><br>
+                                            <small>{{ $notif->message }}</small>
+                                            <hr class="my-1">
+                                        </a>
+                                    @empty
+                                        <span class="dropdown-item">Aucune notification</span>
+                                    @endforelse
+                                    @if ($totalNonLues > 0)
+                                        <div class="dropdown-divider"></div>
+                                        <form method="POST" action="{{ route('membre.notifications.lire') }}">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-center">Marquer tout comme
+                                                lu</button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+
                             <span class="text-dark">
                                 <i class="fas fa-user-circle"></i> {{ Auth::user()->name }}
                             </span>

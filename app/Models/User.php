@@ -53,4 +53,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Membre::class);
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

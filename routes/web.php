@@ -66,6 +66,8 @@ Route::middleware(['auth'])->group(function () {
     // Rejeter une demande d'urgence
     Route::post('/urgences/{urgence}/rejeter', [App\Http\Controllers\Admin\UrgenceAdminController::class, 'rejeter'])->name('admin.urgences.rejeter');
 
+    Route::post('/membre/notifications/lire', [App\Http\Controllers\Membre\NotificationController::class, 'marquerToutLu'])->name('membre.notifications.lire');
+
     // ==================== MEMBRE SIMPLE ROUTES ====================
     Route::get('/membre/dashboard', [MembreDashboard::class, 'index'])->name('membre.dashboard');
     Route::get('/membre/profil', [ProfilController::class, 'edit'])->name('membre.profil.edit');
