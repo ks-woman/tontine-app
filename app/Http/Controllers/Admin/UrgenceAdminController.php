@@ -25,18 +25,16 @@ class UrgenceAdminController extends Controller
         $tontine = $urgence->tontine;
         $membre = $urgence->membre;
 
-        // 1. Marquer tous les tours planifiés comme "décalés"
+        // 1. Décaler tous les tours existants de cette tontine
         Tour::where('tontine_id', $tontine->id)
-            ->where('statut', 'planifie')
             ->increment('ordre');
 
-        // 2. Insérer le tour d’urgence (ordre 1)
+        // 2. Insérer le tour d'urgence (ordre 1)
         Tour::create([
             'tontine_id' => $tontine->id,
             'membre_id' => $membre->id,
             'ordre' => 1,
             'type' => 'urgence',
-            'statut' => 'effectue'
         ]);
 
         // 3. Marquer l’urgence comme traitée
@@ -45,7 +43,7 @@ class UrgenceAdminController extends Controller
         // 4. Notification interne pour le membre
         Notification::create([
             'user_id' => $membre->user_id,
-            'titre' => '✅ Demande d’urgence acceptée',
+            'titre' => ' Demande d’urgence acceptée',
             'message' => 'Votre demande d’urgence a été acceptée. Vous recevrez l’argent immédiatement.',
             'lien' => route('membre.mes_tontines'),
             'lue' => false,
@@ -63,7 +61,7 @@ class UrgenceAdminController extends Controller
         // Notification interne pour le membre
         Notification::create([
             'user_id' => $membre->user_id,
-            'titre' => '❌ Demande d’urgence rejetée',
+            'titre' => ' Demande d’urgence rejetée',
             'message' => 'Votre demande d’urgence a été rejetée. Contactez l’administrateur pour plus d’informations.',
             'lien' => route('membre.mes_tontines'),
             'lue' => false,
