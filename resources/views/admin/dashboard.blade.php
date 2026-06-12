@@ -2,59 +2,78 @@
 
 @section('content')
     <div class="container-fluid">
-        <!-- Cartes statistiques -->
-        <div class="row mb-4">
-            <div class="col-md-6 col-lg-3">
-                <div class="card text-white bg-primary">
+        <!-- Cartes statistiques (version modernisée) -->
+        <div class="row g-4 mb-4">
+            <!-- Carte Membres -->
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="card-title">Total Membres</h6>
-                                <h2 class="mb-0">{{ $stats['total_membres'] }}</h2>
+                                <h6 class="text-muted text-uppercase small">Membres</h6>
+                                <h2 class="mb-0 fw-bold">{{ $stats['total_membres'] }}</h2>
+                                <small class="text-success"><i class="fas fa-arrow-up me-1"></i>+{{ $stats['membres_mois'] }}
+                                    ce mois</small>
                             </div>
-                            <i class="fas fa-users fa-2x"></i>
-                        </div>
-                        <small class="mt-2 d-block">+{{ $stats['membres_mois'] }} ce mois</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card text-white bg-success">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">Tontines</h6>
-                                <h2 class="mb-0">{{ $stats['total_tontines'] }}</h2>
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-users fa-2x text-primary"></i>
                             </div>
-                            <i class="fas fa-hand-holding-usd fa-2x"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card text-white bg-info">
+
+            <!-- Carte Tontines -->
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="card-title">Tours</h6>
-                                <h2 class="mb-0">{{ $stats['total_tours'] }}</h2>
+                                <h6 class="text-muted text-uppercase small">Tontines</h6>
+                                <h2 class="mb-0 fw-bold">{{ $stats['total_tontines'] }}</h2>
                             </div>
-                            <i class="fas fa-calendar-alt fa-2x"></i>
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-hand-holding-usd fa-2x text-success"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="card text-white bg-warning">
+
+            <!-- Carte Tours -->
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="card-title">Total Cotisé</h6>
-                                <h4 class="mb-0">{{ number_format($stats['total_cotisations'], 0, ',', ' ') }} FCFA</h4>
+                                <h6 class="text-muted text-uppercase small">Tours</h6>
+                                <h2 class="mb-0 fw-bold">{{ $stats['total_tours'] }}</h2>
                             </div>
-                            <i class="fas fa-money-bill-wave fa-2x"></i>
+                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-calendar-alt fa-2x text-info"></i>
+                            </div>
                         </div>
-                        <small>+{{ number_format($stats['cotisations_mois'], 0, ',', ' ') }} FCFA ce mois</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carte Total Cotisé -->
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted text-uppercase small">Total cotisé</h6>
+                                <h2 class="mb-0 fw-bold">{{ number_format($stats['total_cotisations'], 0, ',', ' ') }} FCFA
+                                </h2>
+                                <small class="text-success"><i
+                                        class="fas fa-arrow-up me-1"></i>+{{ number_format($stats['cotisations_mois'], 0, ',', ' ') }}
+                                    FCFA ce mois</small>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                                <i class="fas fa-money-bill-wave fa-2x text-warning"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -106,12 +125,12 @@
                     <div class="card-body p-0">
                         <table class="table table-hover mb-0">
                             <thead>
-                                <table>
+                                <tr>
                                     <th>Membre</th>
                                     <th>Tontine</th>
                                     <th>Montant</th>
                                     <th>Date</th>
-                                    </tr>
+                                </tr>
                             </thead>
                             <tbody>
                                 @foreach ($dernieres_cotisations as $cotisation)
