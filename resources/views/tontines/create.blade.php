@@ -10,71 +10,76 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label>Nom de la tontine</label>
-                            <input type="text" name="nom" class="form-control @error('nom') is-invalid @enderror"
-                                value="{{ old('nom') }}" placeholder="Ex: Tontine des commerçants" required>
-                            @error('nom')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="text" name="nom" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            <label>Description</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Objectif, règles, conditions..."></textarea>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label>Durée (mois)</label>
+                            <input type="number" name="duree_mois" class="form-control" min="1" placeholder="Ex: 6">
+                            <small class="text-muted">Laissez vide pour utiliser le nombre de participants</small>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label>Date de début</label>
+                            <input type="date" name="date_debut" class="form-control">
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label>Date de fin (optionnelle)</label>
+                            <input type="date" name="date_fin" class="form-control">
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <label>Fréquence</label>
+                            <select name="frequence" class="form-control">
+                                <option value="mensuelle">Mensuelle</option>
+                                <option value="trimestrielle">Trimestrielle</option>
+                                <option value="semestrielle">Semestrielle</option>
+                            </select>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label>Montant total (FCFA)</label>
-                            <input type="number" step="0.01" name="montant_total"
-                                class="form-control @error('montant_total') is-invalid @enderror"
-                                value="{{ old('montant_total') }}" required>
-                            @error('montant_total')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="number" step="0.01" name="montant_total" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Montant cotisation (FCFA/mois)</label>
+                            <input type="number" step="0.01" name="montant_cotisation" class="form-control">
+                            <small class="text-muted">Si renseigné, prime sur le montant total</small>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label>Nombre de personnes</label>
-                            <input type="number" name="nbr_personne"
-                                class="form-control @error('nbr_personne') is-invalid @enderror"
-                                value="{{ old('nbr_personne') }}" required>
-                            @error('nbr_personne')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="number" name="nbr_personne" class="form-control" required>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label>Taux (%)</label>
-                            <input type="number" step="0.01" name="taux"
-                                class="form-control @error('taux') is-invalid @enderror" value="{{ old('taux') }}">
-                            @error('taux')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="number" step="0.01" name="taux" class="form-control">
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label>Montant du taux (FCFA)</label>
-                            <input type="number" step="0.01" name="montant_taux"
-                                class="form-control @error('montant_taux') is-invalid @enderror"
-                                value="{{ old('montant_taux') }}">
-                            @error('montant_taux')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="number" step="0.01" name="montant_taux" class="form-control">
                         </div>
 
                         <div class="col-md-12 mb-3">
                             <label>Organisateur</label>
-                            <select name="organisateur_id"
-                                class="form-control @error('organisateur_id') is-invalid @enderror" required>
-                                <option value="">-- Choisir un organisateur --</option>
+                            <select name="organisateur_id" class="form-control" required>
+                                <option value="">-- Choisir --</option>
                                 @foreach ($membres as $membre)
-                                    <option value="{{ $membre->id }}"
-                                        {{ old('organisateur_id') == $membre->id ? 'selected' : '' }}>
-                                        {{ $membre->prenom }} {{ $membre->nom }} - {{ $membre->email }}
-                                    </option>
+                                    <option value="{{ $membre->id }}">{{ $membre->prenom }} {{ $membre->nom }}</option>
                                 @endforeach
                             </select>
-                            @error('organisateur_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Créer la tontine</button>
+                    <button type="submit" class="btn btn-primary">Créer</button>
                     <a href="{{ route('tontines.index') }}" class="btn btn-secondary">Annuler</a>
                 </form>
             </div>

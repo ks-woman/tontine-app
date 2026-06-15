@@ -11,11 +11,22 @@ class Tontine extends Model
 
     protected $fillable = [
         'nom',
+        'description',
+        'duree_mois',
+        'date_debut',
+        'date_fin',
+        'montant_cotisation',
+        'frequence',
         'montant_total',
         'nbr_personne',
         'taux',
         'montant_taux',
         'organisateur_id'
+    ];
+
+    protected $casts = [
+        'date_debut' => 'date',
+        'date_fin' => 'date',
     ];
 
     public function organisateur()
@@ -45,7 +56,7 @@ class Tontine extends Model
 
     public function participants()
     {
-        return $this->hasMany(TontineParticipant::class);
+        return $this->hasMany('App\Models\TontineParticipant');
     }
 
     public function membresParticipants()

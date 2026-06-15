@@ -80,4 +80,34 @@ class TourController extends Controller
         $tour->delete();
         return redirect()->route('tours.index')->with('success', 'Tour supprimé.');
     }
+
+    public function tirageAuSort(Tontine $tontine)
+    {
+        // Récupérer tous les participants (membres liés à la tontine via tontine_participants)
+        $participants = $tontine->membresParticipants()->pluck('membre_id')->toArray();
+
+        // Ajouter l'organisateur s'il n'est pas déjà dans la liste
+        if (!in_array($tontine->organisateur_id, $participants)) {
+            $participants[] = $tontine->organisateur_id;
+        }
+
+        // Mélanger aléatoirement
+        shuffle($participants);
+
+        // Supprimer tous les tours existants (non urgents)
+        $tontine->tours()->where('type', 'normal')->delete();
+
+        // Créer les nouveaux tours
+        foreach ($participants as $ordre => $membreId) {
+            Tour::create([
+                'tontine_id' => $tontine->id,
+                'membre_id' => $membreId,
+                'ordre' => $ordre + 1,
+                'type' => 'normal',
+                'statut' => 'planifie'
+            ]);
+        }
+
+        return back()->with('success', 'L’ordre des tours a été tiré au sort.');
+    }
 }

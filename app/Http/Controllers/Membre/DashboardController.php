@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Membre;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Tour;
-use App\Models\Urgence;        // ← Ajout
+use App\Models\Urgence;
 use App\Models\Notification;
 
 class DashboardController extends Controller
@@ -24,10 +24,31 @@ class DashboardController extends Controller
             + $membre->tontinesOrganisees()->count();
 
         // Prochain tour où il est bénéficiaire
-        $prochainTour = Tour::where('membre_id', $membre->id)
+        $prochainTour = Tour::with(['membre', 'tontine'])
+            ->where('membre_id', $membre->id)
             ->where('statut', 'planifie')
             ->orderBy('ordre')
             ->first();
+
+
+        if ($prochainTour && $prochainTour->tontine) {
+            $montantTour = $prochainTour->tontine->montant_total / $prochainTour->tontine->nbr_personne;
+        } else {
+            $montantTour = null;
+        }
+
+        // Ajout : bénéficiaire et montant du prochain tour
+        $prochainBeneficiaire = null;
+        $montantTour = 0;
+        if ($prochainTour) {
+            $prochainBeneficiaire = $prochainTour->membre;
+
+            // Sécuriser le cas où un tour pointe vers une tontine inexistante ou supprimée.
+            if ($prochainTour->tontine) {
+                $nombreParticipants = max((int) $prochainTour->tontine->nbr_personne, 1);
+                $montantTour = $prochainTour->tontine->montant_total / $nombreParticipants;
+            }
+        }
 
         // Évolution des cotisations (12 derniers mois)
         $evolution = [];
@@ -57,9 +78,11 @@ class DashboardController extends Controller
             'totalCotise',
             'nbParticipations',
             'prochainTour',
+            'prochainBeneficiaire',
+            'montantTour',
             'evolution',
             'notifications',
-            'demandeUrgence'      // ← passage à la vue
+            'demandeUrgence'
         ));
     }
 }

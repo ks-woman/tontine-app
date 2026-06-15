@@ -29,4 +29,9 @@ class Annonce extends Model
     {
         return $this->belongsTo(User::class, 'cree_par');
     }
+
+    public function tontine()
+    {
+        return $this->belongsTo(Tontine::class);
+    }
 }

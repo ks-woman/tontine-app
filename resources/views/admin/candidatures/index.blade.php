@@ -28,12 +28,12 @@
                         @forelse($candidatures as $candidature)
                             <tr>
                                 <td>{{ $candidature->id }}</td>
-                                <td>{{ $candidature->annonce->titre }}</td>
+                                <td>{{ $candidature->annonce ? $candidature->annonce->titre : 'Annonce supprimée' }}</br>
                                 <td>{{ $candidature->membre->prenom }} {{ $candidature->membre->nom }}<br>
                                     <small>{{ $candidature->membre->email }}</small>
                                 </td>
                                 <td>{{ $candidature->message ?? '-' }}</td>
-                                <td>{{ $candidature->created_at->format('d/m/Y H:i') }}</td>
+                                <td>{{ $candidature->created_at->format('d/m/Y H:i') }}</br>
                                 <td>
                                     @if ($candidature->statut == 'en_attente')
                                         <span class="badge bg-warning">En attente</span>
@@ -42,7 +42,7 @@
                                     @else
                                         <span class="badge bg-danger">Rejetée</span>
                                     @endif
-                                </td>
+                                    </br>
                                 <td>
                                     @if ($candidature->statut == 'en_attente')
                                         <form action="{{ route('admin.candidatures.accepter', $candidature) }}"
@@ -58,11 +58,11 @@
                                                 onclick="return confirm('Rejeter cette candidature ?')">Rejeter</button>
                                         </form>
                                     @endif
-                                </td>
+                                    </br>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">Aucune candidature pour le moment.</td>
+                                <td colspan="7" class="text-center">Aucune candidature pour le moment.</br>
                             </tr>
                         @endforelse
                     </tbody>

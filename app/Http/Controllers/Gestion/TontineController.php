@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Gestion;
 use App\Http\Controllers\Controller;
 use App\Models\Tontine;
 use App\Models\Membre;
-use Illuminate\Http\Request;
 use App\Models\Tour;
+use Illuminate\Http\Request;
 
 class TontineController extends Controller
 {
@@ -26,7 +26,13 @@ class TontineController extends Controller
     {
         $request->validate([
             'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'duree_mois' => 'nullable|integer|min:1',
+            'date_debut' => 'nullable|date',
+            'date_fin' => 'nullable|date|after_or_equal:date_debut',
+            'frequence' => 'in:mensuelle,trimestrielle,semestrielle',
             'montant_total' => 'required|numeric|min:0',
+            'montant_cotisation' => 'nullable|numeric|min:0',
             'nbr_personne' => 'required|integer|min:2',
             'taux' => 'nullable|numeric|min:0|max:100',
             'montant_taux' => 'nullable|numeric|min:0',
@@ -35,35 +41,10 @@ class TontineController extends Controller
 
         $tontine = Tontine::create($request->all());
 
-        // Génération automatique des tours
-        $this->genererTours($tontine);
+        // Optionnel : ajouter l'organisateur comme participant (si pas déjà)
+        $tontine->membresParticipants()->syncWithoutDetaching([$request->organisateur_id => ['role' => 'organisateur']]);
 
-        return redirect()->route('tontines.index')->with('success', 'Tontine créée avec succès.');
-    }
-
-    public function genererTours(Tontine $tontine)
-    {
-        // Récupérer les participants (organisateur + participants via tontine_participants)
-        $participants = $tontine->membresParticipants()->pluck('membre_id')->toArray();
-
-        // Ajouter l'organisateur s'il n'est pas déjà dans la liste
-        if (!in_array($tontine->organisateur_id, $participants)) {
-            $participants[] = $tontine->organisateur_id;
-        }
-
-        // Mélanger aléatoirement
-        shuffle($participants);
-
-        // Créer les tours
-        foreach ($participants as $ordre => $membreId) {
-            Tour::create([
-                'tontine_id' => $tontine->id,
-                'membre_id' => $membreId,
-                'ordre' => $ordre + 1,
-                'type' => 'normal',
-                'statut' => 'planifie',
-            ]);
-        }
+        return redirect()->route('tontines.index')->with('success', 'Tontine créée avec succès. Veuillez ajouter des participants puis lancer le tirage au sort.');
     }
 
     public function show(Tontine $tontine)
@@ -73,18 +54,26 @@ class TontineController extends Controller
 
     public function edit(Tontine $tontine)
     {
+        $this->authorize('update', $tontine);
         $membres = Membre::all();
         return view('tontines.edit', compact('tontine', 'membres'));
     }
 
     public function update(Request $request, Tontine $tontine)
     {
+        $this->authorize('update', $tontine);
         $request->validate([
             'nom' => 'required|string|max:255',
             'montant_total' => 'required|numeric',
             'nbr_personne' => 'required|integer|min:2',
             'taux' => 'nullable|numeric',
             'montant_taux' => 'nullable|numeric',
+            'description' => 'nullable|string',
+            'duree_mois' => 'nullable|integer|min:1',
+            'date_debut' => 'nullable|date',
+            'date_fin' => 'nullable|date|after_or_equal:date_debut',
+            'montant_cotisation' => 'nullable|numeric|min:0',
+            'frequence' => 'in:mensuelle,trimestrielle,semestrielle',
         ]);
         $tontine->update($request->all());
         return redirect()->route('tontines.index')->with('success', 'Tontine mise à jour.');
@@ -96,14 +85,31 @@ class TontineController extends Controller
         return redirect()->route('tontines.index')->with('success', 'Tontine supprimée.');
     }
 
-    public function regenererTours(Tontine $tontine)
+    // Tirage au sort : génère les tours aléatoirement
+    public function tirerAuSort(Tontine $tontine)
     {
+        $this->authorize('update', $tontine);
+
+        $participants = $tontine->membresParticipants()->pluck('membres.id')->toArray();
+        if (count($participants) < 2) {
+            return back()->with('error', 'Il faut au moins deux participants pour faire un tirage au sort.');
+        }
+
+        shuffle($participants);
+
         // Supprimer les tours existants (non urgents)
         $tontine->tours()->where('type', 'normal')->delete();
 
-        // Générer de nouveaux tours
-        $this->genererTours($tontine);
+        foreach ($participants as $index => $membreId) {
+            Tour::create([
+                'tontine_id' => $tontine->id,
+                'membre_id' => $membreId,
+                'ordre' => $index + 1,
+                'type' => 'normal',
+                'statut' => 'planifie',
+            ]);
+        }
 
-        return back()->with('success', 'Ordre des tours régénéré.');
+        return back()->with('success', 'L’ordre des tours a été tiré au sort.');
     }
 }

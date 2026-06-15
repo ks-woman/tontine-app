@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\MembreController;
 use App\Http\Controllers\Admin\AnnonceController;
 use App\Http\Controllers\Admin\CandidatureController;
 use App\Http\Controllers\Admin\TontineParticipantController;
+use App\Http\Controllers\Admin\UrgenceAdminController;
 use App\Http\Controllers\Gestion\TontineController;
 use App\Http\Controllers\Gestion\TourController;
 use App\Http\Controllers\Gestion\CotisationController;
@@ -19,7 +20,8 @@ use App\Http\Controllers\Membre\MesCotisationsController;
 use App\Http\Controllers\Membre\CandidatureController as MembreCandidatureController;
 use App\Http\Controllers\Membre\CotisationController as MembreCotisationController;
 use App\Http\Controllers\Membre\PaiementController;
-use App\Http\Controllers\Membre\NotificationController;  // ← import pour les notifications
+use App\Http\Controllers\Membre\NotificationController;
+use App\Http\Controllers\Membre\UrgenceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,14 +33,18 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// ==================== ROUTES PUBLIQUES ====================
+// Routes publiques
 Route::get('/annonces', [PublicController::class, 'annonces'])->name('public.annonces');
 Route::get('/annonce/{annonce}', [PublicController::class, 'showAnnonce'])->name('public.annonce.show');
 
 Auth::routes();
 
-// ==================== ROUTES PROTÉGÉES PAR AUTHENTIFICATION ====================
+// Routes protégées par authentification
 Route::middleware(['auth'])->group(function () {
+
+    // Routes pour les tours (monter/descendre)
+    // Route::post('/tours/{tour}/monter', [TourController::class, 'monter'])->name('tours.monter');
+    //  Route::post('/tours/{tour}/descendre', [TourController::class, 'descendre'])->name('tours.descendre');
 
     // ---------- ADMIN ----------
     Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -63,50 +69,40 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tontines/{tontine}/participants', [TontineParticipantController::class, 'index'])->name('tontines.participants.index');
     Route::post('/tontines/{tontine}/participants', [TontineParticipantController::class, 'store'])->name('tontines.participants.store');
     Route::delete('/tontines/{tontine}/participants/{membre}', [TontineParticipantController::class, 'destroy'])->name('tontines.participants.destroy');
-    Route::post('/tontines/{tontine}/regenerer-tours', [TontineController::class, 'regenererTours'])->name('tontines.regenerer-tours');
+    // Tirage au sort (remplace regenerer-tours)
+    Route::post('/tontines/{tontine}/tirage-au-sort', [TontineController::class, 'tirerAuSort'])->name('tontines.tirage-au-sort');
 
     // ---------- GESTION DES URGENCES (ADMIN) ----------
-    Route::get('/urgences', [App\Http\Controllers\Admin\UrgenceAdminController::class, 'index'])->name('admin.urgences.index');
-    Route::post('/urgences/{urgence}/valider', [App\Http\Controllers\Admin\UrgenceAdminController::class, 'valider'])->name('admin.urgences.valider');
-    Route::post('/urgences/{urgence}/rejeter', [App\Http\Controllers\Admin\UrgenceAdminController::class, 'rejeter'])->name('admin.urgences.rejeter');
+    Route::get('/urgences', [UrgenceAdminController::class, 'index'])->name('admin.urgences.index');
+    Route::post('/urgences/{urgence}/valider', [UrgenceAdminController::class, 'valider'])->name('admin.urgences.valider');
+    Route::post('/urgences/{urgence}/rejeter', [UrgenceAdminController::class, 'rejeter'])->name('admin.urgences.rejeter');
 
     // ---------- ESPACE MEMBRE ----------
     Route::prefix('membre')->name('membre.')->group(function () {
-
-        // Dashboard et profil
         Route::get('/dashboard', [MembreDashboard::class, 'index'])->name('dashboard');
         Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');
         Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
 
-        // Tontines et cotisations
         Route::get('/mes-tontines', [MesTontinesController::class, 'index'])->name('mes_tontines');
         Route::get('/mes-cotisations', [MesCotisationsController::class, 'index'])->name('mes_cotisations');
         Route::get('/cotiser/{tontine}', [MembreCotisationController::class, 'create'])->name('cotiser.create');
         Route::post('/cotiser', [MembreCotisationController::class, 'store'])->name('cotiser.store');
 
-        // Urgence
-        Route::post('/urgence/{tontine}', [App\Http\Controllers\Membre\UrgenceController::class, 'demander'])->name('urgence.demander');
+        Route::post('/urgence/{tontine}', [UrgenceController::class, 'demander'])->name('urgence.demander');
 
-        // Paiement en ligne
         Route::get('/paiement/{tontine}', [PaiementController::class, 'form'])->name('paiement.form');
         Route::post('/paiement', [PaiementController::class, 'store'])->name('paiement.store');
 
-        // Candidatures
         Route::post('/candidature/{annonce}', [MembreCandidatureController::class, 'store'])->name('candidature.store');
         Route::get('/mes-candidatures', [MembreCandidatureController::class, 'mesCandidatures'])->name('mes_candidatures');
 
-        // ========== NOTIFICATIONS (page dédiée) ==========
-        // Liste des notifications (avec pagination)
+        // Notifications
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
-
-        // Marquer une notification spécifique comme lue
         Route::post('/notifications/marquer/{id}', [NotificationController::class, 'marquer'])->name('notifications.marquer');
-
-        // Marquer toutes les notifications comme lues
         Route::post('/notifications/marquer-tout', [NotificationController::class, 'marquerTout'])->name('notifications.marquer-tout');
     });
 
-    // ---------- CRUD PRINCIPAUX (toutes les routes ressource) ----------
+    // ---------- CRUD PRINCIPAUX ----------
     Route::resource('tontines', TontineController::class);
     Route::resource('tours', TourController::class);
     Route::resource('cotisations', CotisationController::class);

@@ -9,6 +9,7 @@
 
         <!-- Cartes statistiques -->
         <div class="row mb-4">
+            <!-- Total cotisé -->
             <div class="col-md-4">
                 <div class="card text-white bg-primary">
                     <div class="card-body">
@@ -22,6 +23,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Participations -->
             <div class="col-md-4">
                 <div class="card text-white bg-success">
                     <div class="card-body">
@@ -35,25 +38,28 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Prochain tour (amélioré) -->
             <div class="col-md-4">
-                <div class="card text-white bg-warning">
+                <div class="card text-white bg-warning h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h6 class="card-title">Prochain tour</h6>
-                                <h2 class="mb-0">
-                                    @if ($prochainTour)
-                                        Ordre {{ $prochainTour->ordre }}
-                                    @else
-                                        —
-                                    @endif
-                                </h2>
+                                @if ($prochainTour)
+                                    <h2 class="mb-0">Ordre {{ $prochainTour->ordre }}</h2>
+                                    <p class="mb-0"><strong>Bénéficiaire :</strong>
+                                        {{ $prochainBeneficiaire->prenom ?? '' }} {{ $prochainBeneficiaire->nom ?? '' }}</p>
+                                    <p class="mb-0"><strong>Tontine :</strong> {{ $prochainTour->tontine->nom ?? 'N/A' }}
+                                    </p>
+                                    <p class="mb-0"><strong>Montant à recevoir :</strong>
+                                        {{ number_format($montantTour ?? 0, 0, ',', ' ') }} FCFA</p>
+                                @else
+                                    <p class="mb-0">Aucun tour planifié</p>
+                                @endif
                             </div>
                             <i class="fas fa-calendar-alt fa-2x"></i>
                         </div>
-                        @if ($prochainTour)
-                            <small class="mt-2 d-block">Tontine : {{ $prochainTour->tontine->nom ?? 'N/A' }}</small>
-                        @endif
                     </div>
                 </div>
             </div>

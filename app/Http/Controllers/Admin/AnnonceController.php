@@ -29,6 +29,7 @@ class AnnonceController extends Controller
             'nombre_personnes' => 'required|integer|min:2|max:100',
             'montant_cotisation' => 'required|numeric|min:1000',
             'date_limite' => 'nullable|date|after:today',
+            'tontine_id' => 'nullable|exists:tontines,id',
         ]);
 
         Annonce::create([
@@ -40,6 +41,7 @@ class AnnonceController extends Controller
             'cree_par' => Auth::id(),
             'date_limite' => $request->date_limite,
             'statut' => 'active',
+            'tontine_id' => $request->tontine_id,
         ]);
 
         return redirect()->route('admin.annonces.index')->with('success', 'Annonce publiée avec succès.');
@@ -65,6 +67,7 @@ class AnnonceController extends Controller
             'montant_cotisation' => 'required|numeric|min:1000',
             'date_limite' => 'nullable|date|after:today',
             'statut' => 'required|in:active,cloturee,annulee',
+            'tontine_id' => 'nullable|exists:tontines,id',
         ]);
 
         $annonce->update($request->all());
