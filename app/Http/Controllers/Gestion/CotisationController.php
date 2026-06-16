@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cotisation;
 use App\Models\Tontine;
 use App\Models\Membre;
+use App\Models\Tour;
 use Illuminate\Http\Request;
 
 class CotisationController extends Controller
@@ -88,6 +89,10 @@ class CotisationController extends Controller
     public function confirmer(Cotisation $cotisation)
     {
         $cotisation->update(['statut_paiement' => 'confirme']);
+
+        // Vérifier si le tour doit être validé
+        $this->verifierEtValiderTour($cotisation);
+
         return back()->with('success', 'Paiement confirmé.');
     }
 
@@ -95,5 +100,53 @@ class CotisationController extends Controller
     {
         $cotisation->update(['statut_paiement' => 'rejete']);
         return back()->with('success', 'Paiement rejeté.');
+    }
+
+    private function verifierEtValiderTour(Cotisation $cotisation)
+    {
+        $tontine = $cotisation->tontine;
+        if (!$tontine) {
+            return;
+        }
+
+        $mois = $cotisation->date->month;
+        $annee = $cotisation->date->year;
+
+        // Récupérer tous les participants (incluant organisateur)
+        $participants = $tontine->membresParticipants()->pluck('membre_id')->toArray();
+        if (!in_array($tontine->organisateur_id, $participants)) {
+            $participants[] = $tontine->organisateur_id;
+        }
+        $nombreParticipants = count($participants);
+
+        // Compter les cotisations confirmées pour ce mois et cette tontine
+        $cotisationsConfirmes = Cotisation::where('tontine_id', $tontine->id)
+            ->whereMonth('date', $mois)
+            ->whereYear('date', $annee)
+            ->where('statut_paiement', 'confirme')
+            ->count();
+
+        if ($cotisationsConfirmes >= $nombreParticipants) {
+            // Récupérer le premier tour planifié (prochain bénéficiaire)
+            $tour = Tour::where('tontine_id', $tontine->id)
+                ->where('statut', 'planifie')
+                ->orderBy('ordre')
+                ->first();
+
+            if ($tour) {
+                $tour->statut = 'effectue';
+                $tour->save();
+
+                // Notification au bénéficiaire
+                $beneficiaire = $tour->membre->user;
+                if ($beneficiaire) {
+                    $beneficiaire->notifications()->create([
+                        'titre' => 'Tour effectué',
+                        'message' => "Félicitations ! Vous avez reçu l'argent du tour numéro {$tour->ordre} pour la tontine '{$tontine->nom}'.",
+                        'lien' => route('membre.mes_tontines'),
+                    ]);
+                }
+            }
+        }
     }
 }

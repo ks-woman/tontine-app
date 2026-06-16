@@ -38,4 +38,15 @@ class CandidatureController extends Controller
         $candidature->update(['statut' => 'rejetee']);
         return back()->with('success', 'Candidature rejetée.');
     }
+
+    public function show(Candidature $candidature)
+    {
+        return view('admin.candidatures.show', compact('candidature'));
+    }
+
+    public function destroy(Candidature $candidature)
+    {
+        $candidature->delete();
+        return redirect()->route('admin.candidatures.index')->with('success', 'Candidature supprimée.');
+    }
 }

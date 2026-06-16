@@ -28,12 +28,12 @@
                         @forelse($candidatures as $candidature)
                             <tr>
                                 <td>{{ $candidature->id }}</td>
-                                <td>{{ $candidature->annonce ? $candidature->annonce->titre : 'Annonce supprimée' }}</br>
+                                <td>{{ $candidature->annonce ? $candidature->annonce->titre : 'Annonce supprimée' }}</td>
                                 <td>{{ $candidature->membre->prenom }} {{ $candidature->membre->nom }}<br>
                                     <small>{{ $candidature->membre->email }}</small>
                                 </td>
                                 <td>{{ $candidature->message ?? '-' }}</td>
-                                <td>{{ $candidature->created_at->format('d/m/Y H:i') }}</br>
+                                <td>{{ $candidature->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
                                     @if ($candidature->statut == 'en_attente')
                                         <span class="badge bg-warning">En attente</span>
@@ -42,8 +42,13 @@
                                     @else
                                         <span class="badge bg-danger">Rejetée</span>
                                     @endif
-                                    </br>
+                                </td>
                                 <td>
+                                    <!-- Voir -->
+                                    <a href="{{ route('admin.candidatures.show', $candidature) }}"
+                                        class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
                                     @if ($candidature->statut == 'en_attente')
                                         <form action="{{ route('admin.candidatures.accepter', $candidature) }}"
                                             method="POST" style="display:inline-block">
@@ -58,11 +63,21 @@
                                                 onclick="return confirm('Rejeter cette candidature ?')">Rejeter</button>
                                         </form>
                                     @endif
-                                    </br>
+                                    <!-- Supprimer -->
+                                    <form action="{{ route('admin.candidatures.destroy', $candidature) }}" method="POST"
+                                        style="display:inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Supprimer cette candidature ?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">Aucune candidature pour le moment.</br>
+                                <td colspan="7" class="text-center">Aucune candidature pour le moment.</td>
                             </tr>
                         @endforelse
                     </tbody>

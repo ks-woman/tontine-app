@@ -85,6 +85,24 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <!-- Champ Tontine associée (obligatoire) -->
+                        <div class="col-md-12 mb-3">
+                            <label for="tontine_id" class="form-label">Tontine associée</label>
+                            <select name="tontine_id" class="form-control @error('tontine_id') is-invalid @enderror"
+                                required>
+                                @foreach (\App\Models\Tontine::all() as $tontine)
+                                    <option value="{{ $tontine->id }}"
+                                        {{ old('tontine_id', $annonce->tontine_id) == $tontine->id ? 'selected' : '' }}>
+                                        {{ $tontine->nom }} ({{ $tontine->organisateur->prenom }}
+                                        {{ $tontine->organisateur->nom }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('tontine_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Mettre à jour</button>

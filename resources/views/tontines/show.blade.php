@@ -32,11 +32,20 @@
             <div class="card-footer">
                 @can('update', $tontine)
                     <a href="{{ route('tontines.edit', $tontine) }}" class="btn btn-warning">Modifier</a>
+                    <a href="{{ route('admin.tontines.statistiques', $tontine) }}" class="btn btn-info">
+                        <i class="fas fa-chart-pie"></i> Statistiques
+                    </a>
                     <form action="{{ route('tontines.tirage-au-sort', $tontine) }}" method="POST" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-info"
                             onclick="return confirm('Tirer au sort l’ordre des bénéficiaires ?')">
                             <i class="fas fa-random"></i> Tirage au sort
+                        </button>
+                    </form>
+                    <form action="{{ route('admin.tontines.valider-tour', $tontine) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-success" onclick="return confirm('Valider le prochain tour ?')">
+                            <i class="fas fa-check-circle"></i> Valider le prochain tour
                         </button>
                     </form>
                 @endcan

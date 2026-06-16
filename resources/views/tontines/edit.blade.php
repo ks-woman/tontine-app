@@ -78,20 +78,6 @@
                             <input type="number" step="0.01" name="montant_taux" class="form-control"
                                 value="{{ old('montant_taux', $tontine->montant_taux) }}">
                         </div>
-
-                        <div class="mb-3">
-                            <label for="tontine_id" class="form-label">Tontine associée (optionnel)</label>
-                            <select name="tontine_id" class="form-control @error('tontine_id') is-invalid @enderror">
-                                <option value="">-- Aucune --</option>
-                                @foreach (\App\Models\Tontine::all() as $tontine)
-                                    <option value="{{ $tontine->id }}"
-                                        {{ old('tontine_id', $annonce->tontine_id) == $tontine->id ? 'selected' : '' }}>
-                                        {{ $tontine->nom }} ({{ $tontine->organisateur->prenom }}
-                                        {{ $tontine->organisateur->nom }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Mettre à jour</button>
                     <a href="{{ route('tontines.index') }}" class="btn btn-secondary">Annuler</a>

@@ -25,6 +25,7 @@
                             <th>Membre</th>
                             <th>Mode</th>
                             <th>Statut</th>
+                            <th>Preuve</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -54,6 +55,16 @@
                                         <span class="badge bg-warning">En attente</span>
                                     @else
                                         <span class="badge bg-danger">Rejeté</span>
+                                    @endif
+                                    </br>
+                                <td>
+                                    @if ($cotisation->preuve_fichier)
+                                        <a href="{{ asset('storage/' . $cotisation->preuve_fichier) }}" target="_blank"
+                                            class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    @else
+                                        <span class="text-muted">—</span>
                                     @endif
                                     </br>
                                 <td>
@@ -87,7 +98,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center">Aucune cotisation enregistrée.</td>
+                                <td colspan="9" class="text-center">Aucune cotisation enregistrée.</br>
                             </tr>
                         @endforelse
                     </tbody>

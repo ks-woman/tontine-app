@@ -29,7 +29,7 @@ class AnnonceController extends Controller
             'nombre_personnes' => 'required|integer|min:2|max:100',
             'montant_cotisation' => 'required|numeric|min:1000',
             'date_limite' => 'nullable|date|after:today',
-            'tontine_id' => 'nullable|exists:tontines,id',
+            'tontine_id' => 'required|exists:tontines,id',
         ]);
 
         Annonce::create([
@@ -52,8 +52,9 @@ class AnnonceController extends Controller
         return view('admin.annonces.show', compact('annonce'));
     }
 
-    public function edit(Annonce $annonce)
+    public function edit($id)
     {
+        $annonce = Annonce::findOrFail($id);
         return view('admin.annonces.edit', compact('annonce'));
     }
 
@@ -67,7 +68,7 @@ class AnnonceController extends Controller
             'montant_cotisation' => 'required|numeric|min:1000',
             'date_limite' => 'nullable|date|after:today',
             'statut' => 'required|in:active,cloturee,annulee',
-            'tontine_id' => 'nullable|exists:tontines,id',
+            'tontine_id' => 'required|exists:tontines,id',
         ]);
 
         $annonce->update($request->all());

@@ -46,7 +46,7 @@ class DashboardController extends Controller
             // Sécuriser le cas où un tour pointe vers une tontine inexistante ou supprimée.
             if ($prochainTour->tontine) {
                 $nombreParticipants = max((int) $prochainTour->tontine->nbr_personne, 1);
-                $montantTour = $prochainTour->tontine->montant_total / $nombreParticipants;
+                $montantTour = $prochainTour->tontine->montant_total;
             }
         }
 

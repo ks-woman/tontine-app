@@ -68,9 +68,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="tontine_id" class="form-label">Tontine associée (optionnel)</label>
-                            <select name="tontine_id" class="form-control @error('tontine_id') is-invalid @enderror">
-                                <option value="">-- Aucune (créer la tontine plus tard) --</option>
+                            <label for="tontine_id" class="form-label">Tontine associée (obligatoire)</label>
+                            <select name="tontine_id" class="form-control @error('tontine_id') is-invalid @enderror"
+                                required>
                                 @foreach (\App\Models\Tontine::all() as $tontine)
                                     <option value="{{ $tontine->id }}"
                                         {{ old('tontine_id') == $tontine->id ? 'selected' : '' }}>
@@ -79,13 +79,17 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @error('tontine_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Publier l'annonce</button>
-                    <a href="{{ route('admin.annonces.index') }}" class="btn btn-secondary">Annuler</a>
-                </form>
             </div>
+
+            <button type="submit" class="btn btn-primary">Publier l'annonce</button>
+            <a href="{{ route('admin.annonces.index') }}" class="btn btn-secondary">Annuler</a>
+            </form>
         </div>
+    </div>
     </div>
 @endsection

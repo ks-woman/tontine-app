@@ -112,4 +112,82 @@ class TontineController extends Controller
 
         return back()->with('success', 'L’ordre des tours a été tiré au sort.');
     }
+
+    public function statistiques(Tontine $tontine)
+    {
+        // Vérifier que l'utilisateur est admin ou organisateur
+        $this->authorize('update', $tontine);
+
+        // Récupérer tous les participants avec leurs cotisations
+        $participants = $tontine->membresParticipants()->with(['cotisations' => function ($query) use ($tontine) {
+            $query->where('tontine_id', $tontine->id);
+        }])->get();
+
+        // Calcul des totaux
+        $totalCotise = 0;
+        $donnees = $participants->map(function ($membre) use ($tontine, &$totalCotise) {
+            $montant = $membre->cotisations->sum('montant');
+            $totalCotise += $montant;
+            return [
+                'membre' => $membre,
+                'montant' => $montant,
+                'part' => $tontine->montant_total / $tontine->nbr_personne,
+            ];
+        });
+
+        return view('tontines.statistiques', compact('tontine', 'donnees', 'totalCotise'));
+    }
+
+    public function validerProchainTour(Tontine $tontine)
+    {
+        $this->authorize('update', $tontine); // ou une autre politique
+
+        // Récupérer le mois et l'année actuels (ou on peut permettre de choisir un mois)
+        $mois = now()->month;
+        $annee = now()->year;
+
+        // Récupérer tous les participants
+        $participants = $tontine->membresParticipants()->pluck('membre_id')->toArray();
+        if (!in_array($tontine->organisateur_id, $participants)) {
+            $participants[] = $tontine->organisateur_id;
+        }
+        $nombreParticipants = count($participants);
+
+        // Compter les cotisations confirmées pour ce mois
+        $cotisationsConfirmes = Cotisation::where('tontine_id', $tontine->id)
+            ->whereMonth('date', $mois)
+            ->whereYear('date', $annee)
+            ->where('statut_paiement', 'confirme')
+            ->count();
+
+        if ($cotisationsConfirmes < $nombreParticipants) {
+            return back()->with('error', 'Toutes les cotisations du mois ne sont pas encore confirmées. Il manque ' . ($nombreParticipants - $cotisationsConfirmes) . ' cotisation(s).');
+        }
+
+        // Récupérer le prochain tour planifié
+        $tour = Tour::where('tontine_id', $tontine->id)
+            ->where('statut', 'planifie')
+            ->orderBy('ordre')
+            ->first();
+
+        if (!$tour) {
+            return back()->with('error', 'Aucun tour planifié pour cette tontine.');
+        }
+
+        // Marquer le tour comme effectué
+        $tour->statut = 'effectue';
+        $tour->save();
+
+        // Notification au bénéficiaire
+        $beneficiaire = $tour->membre->user;
+        if ($beneficiaire) {
+            $beneficiaire->notifications()->create([
+                'titre' => 'Tour effectué',
+                'message' => "Félicitations ! Vous avez reçu l'argent du tour numéro {$tour->ordre} pour la tontine '{$tontine->nom}'.",
+                'lien' => route('membre.mes_tontines'),
+            ]);
+        }
+
+        return back()->with('success', 'Le tour a été validé et le bénéficiaire a été notifié.');
+    }
 }
